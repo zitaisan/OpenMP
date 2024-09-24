@@ -1,26 +1,27 @@
-﻿﻿
-#include "pch.h"
+﻿#include "pch.h"
 #include <omp.h>
 #include <iostream>
+#include <cmath>
 #include <Windows.h>
+#include <iomanip> 
+using namespace std;
 int main()
 {
-	int k, n;
-	std::cout << "k = ";
-	std::cin >> k;
+	long long n;
 	std::cout << "n = ";
 	std::cin >> n;
-	int sum = 0;
+	double x, step, res = 0.0;
+	step = 1. / (double) n;
 
-#pragma omp parallel num_threads(k) reduction(+:sum) shared(n)
+	#pragma omp parallel for private(x) reduction(+:res) 
 	{
-#pragma omp for schedule(dynamic, 2)
-		for (int i = 1; i < n + 1; i++)
-		{
-			sum += i;
-			printf("[%d]: PPPcalculation of the iteration number <%d>.\n", omp_get_thread_num(), i);
+		for (int i = 0; i < n; i++) {
+			x = (i + 0.5) * step;
+			res += 4.0 / (1.0 + x*x);
 		}
-
+		
 	}
-	std::cout << "sum = " << sum << std::endl;
+	res = res * step;
+	printf("PI=%15.12f\n", res);
+	return 0;
 }
